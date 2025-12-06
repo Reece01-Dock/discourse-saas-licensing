@@ -10,6 +10,8 @@ enabled_site_setting :license_enabled
 
 register_asset "stylesheets/saas-licensing.scss", :admin
 
+gem "stripe", ">= 9.4", "< 10"
+
 module ::DiscourseSaas
   PLUGIN_NAME = "discourse-saas-licensing"
 
