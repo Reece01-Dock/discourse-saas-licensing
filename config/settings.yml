@@ -1,5 +1,4 @@
 plugins:
-  discourse-saas-licensing:
-    license_enabled:
-      default: true
-      client: true
+  license_enabled:
+    default: true
+    client: true
