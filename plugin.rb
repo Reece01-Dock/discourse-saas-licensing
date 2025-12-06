@@ -51,7 +51,7 @@ after_initialize do
         post :invite, on: :member
         delete "member/:user_id", action: :remove_member, on: :member
       end
-      resource :settings, only: %i[index update], controller: "settings", path: "/license/settings"
+      resource :settings, only: %i[show update], controller: "settings", path: "/license/settings"
     end
   end
 

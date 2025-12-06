@@ -2,12 +2,12 @@ module DiscourseSaas
   module Admin
     class SettingsController < ::DiscourseSaas::ApplicationController
       requires_plugin ::DiscourseSaas::PLUGIN_NAME
-      skip_before_action :ensure_enabled, only: %i[index update]
+      skip_before_action :ensure_enabled, only: %i[show update]
       before_action :ensure_admin
 
       PLUGIN_SETTINGS = %i[license_enabled].freeze
 
-      def index
+      def show
         render_json_dump(settings: settings_hash)
       end
 
