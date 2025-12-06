@@ -1,5 +1,9 @@
 en:
   site_settings:
     license_enabled: "Enable the SaaS licensing plugin"
+    stripe_public_key: "Stripe publishable key (pk_...)"
+    stripe_secret_key: "Stripe secret key (sk_...)"
+    allow_org_licenses: "Allow organisation licenses (enables seats and org members)"
+    webhook_shared_secret: "Webhook shared secret for license events (keep private)"
   saas_licensing:
     title: "SaaS Licensing"

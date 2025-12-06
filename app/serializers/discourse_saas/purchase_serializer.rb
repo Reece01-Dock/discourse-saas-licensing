@@ -5,7 +5,10 @@ class DiscourseSaas::PurchaseSerializer < ApplicationSerializer
              :organisation_id,
              :license_package_id,
              :package,
-             :user_id
+             :user_id,
+             :username,
+             :package_name,
+             :created_at
 
   def package
     DiscourseSaas::LicensePackageSerializer.new(
@@ -13,5 +16,13 @@ class DiscourseSaas::PurchaseSerializer < ApplicationSerializer
       scope: scope,
       root: false,
     )
+  end
+
+  def username
+    object.user&.username
+  end
+
+  def package_name
+    object.license_package&.name
   end
 end

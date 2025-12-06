@@ -31,6 +31,7 @@ after_initialize do
   require_relative "app/controllers/discourse_saas/licenses_controller"
   require_relative "app/controllers/discourse_saas/admin/license_packages_controller"
   require_relative "app/controllers/discourse_saas/admin/organisations_controller"
+  require_relative "app/controllers/discourse_saas/admin/purchases_controller"
   require_relative "app/controllers/discourse_saas/admin/settings_controller"
   require_relative "app/jobs/discourse_saas/license_expiry_job"
 
@@ -51,6 +52,7 @@ after_initialize do
         post :invite, on: :member
         delete "member/:user_id", action: :remove_member, on: :member
       end
+      resources :purchases, path: "/license/purchases", only: %i[index create destroy]
       resource :settings, only: %i[show update], controller: "settings", path: "/license/settings"
     end
   end

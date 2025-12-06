@@ -13,6 +13,8 @@ export default class AdminPluginsSaasLicensingController extends Controller {
   @tracked settings = {};
   @tracked settingsForm = {};
   @tracked invitee = "";
+  @tracked purchases = [];
+  @tracked licenseForm = this.blankLicense();
 
   blankPackage() {
     return {
@@ -25,16 +27,28 @@ export default class AdminPluginsSaasLicensingController extends Controller {
     };
   }
 
+  blankLicense() {
+    return {
+      username_or_email: "",
+      package_id: null,
+      duration_days: "",
+      organisation_name: "",
+    };
+  }
+
   @action refresh() {
     Promise.all([
       ajax("/saas/admin/license/packages"),
       ajax("/saas/admin/license/orgs"),
       ajax("/saas/admin/license/settings"),
-    ]).then(([packages, organisations, settings]) => {
+      ajax("/saas/admin/license/purchases"),
+    ]).then(([packages, organisations, settings, purchases]) => {
       this.packages = packages.license_packages || [];
       this.organisations = organisations.organisations || [];
       this.settings = settings.settings || {};
       this.settingsForm = { ...this.settings };
+      this.purchases = purchases.purchases || [];
+      this.licenseForm = this.blankLicense();
     }, popupAjaxError);
   }
 
@@ -108,7 +122,7 @@ export default class AdminPluginsSaasLicensingController extends Controller {
       .catch(popupAjaxError);
   }
 
-  @action inviteMember(org, event) {
+      @action inviteMember(org, event) {
     event?.preventDefault();
     if (!this.invitee) {
       return;
@@ -130,6 +144,45 @@ export default class AdminPluginsSaasLicensingController extends Controller {
     ajax(`/saas/admin/license/orgs/${org.id}/member/${userId}`, { method: "DELETE" })
       .then(() => {
         notifySuccess("Member removed");
+        this.refresh();
+      })
+      .catch(popupAjaxError);
+  }
+
+  @action updateLicenseField(key, event) {
+    this.licenseForm = {
+      ...this.licenseForm,
+      [key]: event?.target?.value,
+    };
+  }
+
+  @action selectLicensePackage(event) {
+    this.licenseForm = {
+      ...this.licenseForm,
+      package_id: event?.target?.value,
+    };
+  }
+
+  @action saveLicense(event) {
+    event?.preventDefault();
+    ajax("/saas/admin/license/purchases", {
+      method: "POST",
+      data: { license: this.licenseForm },
+    })
+      .then(() => {
+        notifySuccess("License created");
+        this.refresh();
+      })
+      .catch(popupAjaxError);
+  }
+
+  @action revokeLicense(purchase) {
+    if (!window.confirm("Revoke this license?")) {
+      return;
+    }
+    ajax(`/saas/admin/license/purchases/${purchase.id}`, { method: "DELETE" })
+      .then(() => {
+        notifySuccess("License revoked");
         this.refresh();
       })
       .catch(popupAjaxError);

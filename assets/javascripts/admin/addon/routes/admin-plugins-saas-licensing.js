@@ -13,13 +13,18 @@ function fetchSettings() {
   return ajax("/saas/admin/license/settings");
 }
 
+function fetchPurchases() {
+  return ajax("/saas/admin/license/purchases");
+}
+
 export default class AdminPluginsSaasLicensingRoute extends DiscourseRoute {
   model() {
-    return Promise.all([fetchPackages(), fetchOrganisations(), fetchSettings()]).then(
-      ([packages, organisations, settings]) => ({
+    return Promise.all([fetchPackages(), fetchOrganisations(), fetchSettings(), fetchPurchases()]).then(
+      ([packages, organisations, settings, purchases]) => ({
         packages: packages.license_packages || [],
         organisations: organisations.organisations || [],
         settings: settings.settings || {},
+        purchases: purchases.purchases || [],
       })
     );
   }
@@ -31,6 +36,8 @@ export default class AdminPluginsSaasLicensingRoute extends DiscourseRoute {
       organisations: model.organisations,
       settings: model.settings,
       settingsForm: { ...model.settings },
+      purchases: model.purchases,
+      licenseForm: controller.blankLicense(),
     });
   }
 }

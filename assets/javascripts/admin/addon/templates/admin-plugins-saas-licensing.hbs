@@ -10,6 +10,26 @@
           {{on "change" (fn this.updateSettingCheckbox "license_enabled")}}
         />
       </label>
+      <label>
+        {{i18n "saas_licensing.stripe_public_key"}}
+        <Input @value={{this.settingsForm.stripe_public_key}} />
+      </label>
+      <label>
+        {{i18n "saas_licensing.stripe_secret_key"}}
+        <Input @value={{this.settingsForm.stripe_secret_key}} @type="password" />
+      </label>
+      <label>
+        {{i18n "saas_licensing.allow_org_licenses"}}
+        <Input
+          @type="checkbox"
+          @checked={{this.settingsForm.allow_org_licenses}}
+          {{on "change" (fn this.updateSettingCheckbox "allow_org_licenses")}}
+        />
+      </label>
+      <label>
+        {{i18n "saas_licensing.webhook_shared_secret"}}
+        <Input @value={{this.settingsForm.webhook_shared_secret}} @type="password" />
+      </label>
     </div>
     <div class="saas-licensing__actions">
       <DButton
@@ -20,6 +40,91 @@
       />
     </div>
   </form>
+
+  <h2>{{i18n "saas_licensing.licenses"}}</h2>
+  <form class="saas-licensing__form" {{on "submit" this.saveLicense}}>
+    <div class="saas-licensing__fields">
+      <label>
+        {{i18n "saas_licensing.username_or_email"}}
+        <Input
+          @value={{this.licenseForm.username_or_email}}
+          {{on "input" (fn this.updateLicenseField "username_or_email")}}
+        />
+      </label>
+      <label>
+        {{i18n "saas_licensing.package"}}
+        <select
+          class="select-kit"
+          value={{this.licenseForm.package_id}}
+          {{on "change" this.selectLicensePackage}}
+        >
+          <option value="">{{i18n "saas_licensing.select_package"}}</option>
+          {{#each this.packages as |pkg|}}
+            <option value={{pkg.id}}>
+              {{pkg.name}} ({{pkg.duration_days}}d/{{pkg.seats}} seats)
+            </option>
+          {{/each}}
+        </select>
+      </label>
+      <label>
+        {{i18n "saas_licensing.duration_days_optional"}}
+        <Input
+          @type="number"
+          @value={{this.licenseForm.duration_days}}
+          {{on "input" (fn this.updateLicenseField "duration_days")}}
+        />
+      </label>
+      <label>
+        {{i18n "saas_licensing.organisation_name_optional"}}
+        <Input
+          @value={{this.licenseForm.organisation_name}}
+          {{on "input" (fn this.updateLicenseField "organisation_name")}}
+        />
+      </label>
+    </div>
+    <div class="saas-licensing__actions">
+      <DButton
+        @action={{this.saveLicense}}
+        @icon="plus"
+        @label={{i18n "saas_licensing.create_license"}}
+        @class="btn-primary"
+      />
+    </div>
+  </form>
+
+  <table class="saas-licensing__table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>{{i18n "saas_licensing.username_or_email"}}</th>
+        <th>{{i18n "saas_licensing.package"}}</th>
+        <th>{{i18n "saas_licensing.expires_at"}}</th>
+        <th>{{i18n "saas_licensing.organisation"}}</th>
+        <th>{{i18n "saas_licensing.active"}}</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each this.purchases as |purchase|}}
+        <tr>
+          <td>{{purchase.id}}</td>
+          <td>{{purchase.username}}</td>
+          <td>{{purchase.package_name}}</td>
+          <td>{{purchase.expires_at}}</td>
+          <td>{{purchase.organisation_id}}</td>
+          <td>{{purchase.active}}</td>
+          <td class="saas-licensing__row-actions">
+            <DButton
+              @icon="trash-alt"
+              @class="btn-danger"
+              @action={{fn this.revokeLicense purchase}}
+              @title={{i18n "saas_licensing.revoke"}}
+            />
+          </td>
+        </tr>
+      {{/each}}
+    </tbody>
+  </table>
 
   <h2>{{i18n "saas_licensing.packages"}}</h2>
 

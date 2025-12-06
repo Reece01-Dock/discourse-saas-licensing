@@ -5,7 +5,8 @@ module DiscourseSaas
       skip_before_action :ensure_enabled, only: %i[show update]
       before_action :ensure_admin
 
-      PLUGIN_SETTINGS = %i[license_enabled].freeze
+      PLUGIN_SETTINGS =
+        %i[license_enabled stripe_public_key stripe_secret_key allow_org_licenses webhook_shared_secret].freeze
 
       def show
         render_json_dump(settings: settings_hash)
