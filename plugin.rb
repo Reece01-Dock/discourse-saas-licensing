@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # name: discourse-saas-licensing
-# about: SaaS licensing for individuals and organisations with Stripe Checkout.
+# about: SaaS licensing for individuals and organisations (payment-agnostic, BYO provider).
 # version: 0.1.0
 # authors: OpenAI Codex
 # url: https://github.com/discourse/discourse-saas-licensing
@@ -9,8 +9,6 @@
 enabled_site_setting :license_enabled
 
 register_asset "stylesheets/saas-licensing.scss", :admin
-
-gem "stripe", ">= 9.4", "< 10"
 
 module ::DiscourseSaas
   PLUGIN_NAME = "discourse-saas-licensing"
