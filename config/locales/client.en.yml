@@ -1,0 +1,35 @@
+en:
+  js:
+    saas_licensing:
+      title: "SaaS Licensing"
+      packages: "License Packages"
+      organisations: "Organisations"
+      settings: "Settings"
+      license_enabled: "Licensing enabled"
+      stripe_public_key: "Stripe public key"
+      stripe_secret_key: "Stripe secret key"
+      stripe_webhook_secret: "Stripe webhook secret"
+      save_settings: "Save settings"
+      create_package: "Create Package"
+      save_package: "Save Package"
+      seats: "Seats"
+      duration_days: "Duration (days)"
+      price_cents: "Price (cents)"
+      group_id: "Group ID"
+      is_org_license: "Organisation license"
+      invite: "Invite member"
+      username_or_email: "Username or email"
+      remove: "Remove"
+      seats_used: "Seats used"
+      seats_total: "Seats total"
+      active: "Active"
+      refresh: "Refresh"
+      organisation_members: "Members"
+      package_name: "Name"
+      org_name: "Org name"
+      org_id: "Org ID"
+      webhook_received: "Stripe webhook received"
+    admin:
+      navigation:
+        saas_licensing: "SaaS Licensing"
+*** End Patch

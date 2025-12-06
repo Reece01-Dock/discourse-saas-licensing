@@ -1,0 +1,72 @@
+.saas-licensing {
+  h2 {
+    margin-top: 1rem;
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1rem;
+    border: 1px solid var(--primary-low);
+    border-radius: 4px;
+    margin-bottom: 1rem;
+    background: var(--primary-very-low);
+  }
+
+  &__fields {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 0.5rem;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  &__table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0.5rem 0 1rem;
+
+    th,
+    td {
+      padding: 0.35rem 0.5rem;
+      border-bottom: 1px solid var(--primary-low);
+    }
+  }
+
+  &__row-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+  }
+
+  &__org-card {
+    border: 1px solid var(--primary-low);
+    border-radius: 4px;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    background: var(--primary-very-low);
+  }
+
+  &__org-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  &__invite {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+}

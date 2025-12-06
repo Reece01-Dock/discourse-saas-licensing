@@ -1,0 +1,167 @@
+<div class="saas-licensing">
+  <h2>{{i18n "saas_licensing.settings"}}</h2>
+  <form class="saas-licensing__form" {{on "submit" this.saveSettings}}>
+    <div class="saas-licensing__fields">
+      <label>
+        {{i18n "saas_licensing.license_enabled"}}
+        <Input
+          @type="checkbox"
+          @checked={{this.settingsForm.license_enabled}}
+          {{on "change" (fn this.updateSettingCheckbox "license_enabled")}}
+        />
+      </label>
+      <label>
+        {{i18n "saas_licensing.stripe_public_key"}}
+        <Input @value={{this.settingsForm.stripe_public_key}} />
+      </label>
+      <label>
+        {{i18n "saas_licensing.stripe_secret_key"}}
+        <Input @value={{this.settingsForm.stripe_secret_key}} @type="password" />
+      </label>
+      <label>
+        {{i18n "saas_licensing.stripe_webhook_secret"}}
+        <Input @value={{this.settingsForm.stripe_webhook_secret}} @type="password" />
+      </label>
+    </div>
+    <div class="saas-licensing__actions">
+      <DButton
+        @action={{this.saveSettings}}
+        @icon="save"
+        @label={{i18n "saas_licensing.save_settings"}}
+        @class="btn-primary"
+      />
+    </div>
+  </form>
+
+  <h2>{{i18n "saas_licensing.packages"}}</h2>
+
+  <form class="saas-licensing__form" {{on "submit" this.savePackage}}>
+    <div class="saas-licensing__fields">
+      <label>
+        {{i18n "saas_licensing.package_name"}}
+        <Input @value={{this.packageForm.name}} />
+      </label>
+      <label>
+        {{i18n "saas_licensing.price_cents"}}
+        <Input @value={{this.packageForm.price_cents}} @type="number" />
+      </label>
+      <label>
+        {{i18n "saas_licensing.duration_days"}}
+        <Input @value={{this.packageForm.duration_days}} @type="number" />
+      </label>
+      <label>
+        {{i18n "saas_licensing.seats"}}
+        <Input @value={{this.packageForm.seats}} @type="number" />
+      </label>
+      <label>
+        {{i18n "saas_licensing.group_id"}}
+        <Input @value={{this.packageForm.group_id}} @type="number" />
+      </label>
+      <label>
+        <Input
+          @type="checkbox"
+          @checked={{this.packageForm.is_org_license}}
+          {{on "change" this.updateOrgLicense}}
+        />
+        {{i18n "saas_licensing.is_org_license"}}
+      </label>
+    </div>
+    <div class="saas-licensing__actions">
+      <DButton
+        @action={{this.savePackage}}
+        @icon="plus"
+        @label={{this.editingPackage
+          ? (i18n "saas_licensing.save_package")
+          : (i18n "saas_licensing.create_package")}}
+        @class="btn-primary"
+      />
+      {{#if this.editingPackage}}
+        <DButton @action={{this.resetForm}} @label="Reset" @class="btn-flat" />
+      {{/if}}
+    </div>
+  </form>
+
+  <table class="saas-licensing__table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>{{i18n "saas_licensing.package_name"}}</th>
+        <th>{{i18n "saas_licensing.price_cents"}}</th>
+        <th>{{i18n "saas_licensing.duration_days"}}</th>
+        <th>{{i18n "saas_licensing.seats"}}</th>
+        <th>{{i18n "saas_licensing.group_id"}}</th>
+        <th>{{i18n "saas_licensing.is_org_license"}}</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each this.packages as |pkg|}}
+        <tr>
+          <td>{{pkg.id}}</td>
+          <td>{{pkg.name}}</td>
+          <td>{{pkg.price_cents}}</td>
+          <td>{{pkg.duration_days}}</td>
+          <td>{{pkg.seats}}</td>
+          <td>{{pkg.group_id}}</td>
+          <td>{{pkg.is_org_license}}</td>
+          <td class="saas-licensing__row-actions">
+            <DButton @action={{fn this.editPackage pkg}} @icon="pencil-alt" @class="btn-flat" />
+            <DButton @action={{fn this.deletePackage pkg}} @icon="trash-alt" @class="btn-danger" />
+          </td>
+        </tr>
+      {{/each}}
+    </tbody>
+  </table>
+
+  <div class="saas-licensing__header">
+    <h2>{{i18n "saas_licensing.organisations"}}</h2>
+    <DButton @action={{this.refresh}} @icon="sync" @label={{i18n "saas_licensing.refresh"}} />
+  </div>
+
+  {{#each this.organisations as |org|}}
+    <div class="saas-licensing__org-card">
+      <div class="saas-licensing__org-meta">
+        <strong>{{org.name}}</strong>
+        <span>ID: {{org.id}}</span>
+        <span>Group: {{org.group_id}}</span>
+        <span>{{i18n "saas_licensing.seats_used"}}: {{org.seats_used}} / {{org.seats_total}}</span>
+        <span>{{i18n "saas_licensing.active"}}: {{org.active}}</span>
+      </div>
+
+      <form class="saas-licensing__invite" {{on "submit" (fn this.inviteMember org)}}>
+        <Input
+          placeholder={{i18n "saas_licensing.username_or_email"}}
+          @value={{this.invitee}}
+        />
+        <DButton @label={{i18n "saas_licensing.invite"}} @action={{fn this.inviteMember org}} @icon="plus" />
+      </form>
+
+      <h4>{{i18n "saas_licensing.organisation_members"}}</h4>
+      <table class="saas-licensing__table">
+        <thead>
+          <tr>
+            <th>User ID</th>
+            <th>{{i18n "saas_licensing.username_or_email"}}</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each org.members as |member|}}
+            <tr>
+              <td>{{member.user_id}}</td>
+              <td>{{member.username}}</td>
+              <td>
+                <DButton
+                  @icon="trash-alt"
+                  @class="btn-danger"
+                  @action={{fn this.removeMember org member.user_id}}
+                  @title={{i18n "saas_licensing.remove"}}
+                />
+              </td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+  {{/each}}
+</div>

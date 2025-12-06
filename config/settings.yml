@@ -1,0 +1,14 @@
+plugins:
+  discourse-saas-licensing:
+    license_enabled:
+      default: true
+      client: true
+    stripe_public_key:
+      default: ""
+      client: true
+    stripe_secret_key:
+      default: ""
+      secret: true
+    stripe_webhook_secret:
+      default: ""
+      secret: true

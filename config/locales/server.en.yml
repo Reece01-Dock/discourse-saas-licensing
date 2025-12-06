@@ -1,0 +1,8 @@
+en:
+  site_settings:
+    license_enabled: "Enable the SaaS licensing plugin"
+    stripe_public_key: "Stripe public key for Checkout"
+    stripe_secret_key: "Stripe secret key for Checkout"
+    stripe_webhook_secret: "Stripe webhook signing secret"
+  saas_licensing:
+    title: "SaaS Licensing"
