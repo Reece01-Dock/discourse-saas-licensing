@@ -10,18 +10,11 @@ enabled_site_setting :license_enabled
 
 register_asset "stylesheets/saas-licensing.scss", :admin
 
-gem "stripe", ">= 9.4", "< 10"
-
 module ::DiscourseSaas
   PLUGIN_NAME = "discourse-saas-licensing"
 
   def self.ensure_enabled!
     raise Discourse::InvalidAccess.new("Licensing disabled") if !SiteSetting.license_enabled
-  end
-
-  def self.stripe_client
-    Stripe.api_key = SiteSetting.stripe_secret_key if SiteSetting.stripe_secret_key.present?
-    Stripe
   end
 end
 
@@ -39,7 +32,6 @@ after_initialize do
   require_relative "app/controllers/discourse_saas/admin/license_packages_controller"
   require_relative "app/controllers/discourse_saas/admin/organisations_controller"
   require_relative "app/controllers/discourse_saas/admin/settings_controller"
-  require_relative "app/controllers/discourse_saas/stripe_controller"
   require_relative "app/jobs/discourse_saas/license_expiry_job"
 
   module ::DiscourseSaas
@@ -50,7 +42,6 @@ after_initialize do
   end
 
   DiscourseSaas::Engine.routes.draw do
-    post "/stripe/webhook" => "stripe#webhook"
     get "/license/user/:id" => "licenses#user"
     get "/license/org/:id" => "licenses#org"
 

@@ -1,10 +1,10 @@
 # Discourse SaaS Licensing Plugin
 
-Production-ready SaaS licensing for Discourse. Supports individual and organisation licenses, Stripe Checkout, seat management, and loader-friendly validation endpoints. Built with Discourse’s plugin architecture (Ruby on Rails, ActiveRecord, Ember.js).
+Production-ready SaaS licensing for Discourse. Supports individual and organisation licenses, seat management, and loader-friendly validation endpoints. Built with Discourse’s plugin architecture (Ruby on Rails, ActiveRecord, Ember.js). Payment is intentionally decoupled—integrate your provider (e.g., Stripe) from another plugin or app by creating purchases/orgs via this plugin’s models/APIs.
 
 ## Features
 - License packages: name, price, duration days, seats, group mapping, org/individual flag.
-- Stripe Checkout webhook: creates purchases, assigns Discourse groups, builds org groups for team licenses.
+- Payment-agnostic: external plugins or services create purchases and trigger access; this plugin focuses on licensing + group management.
 - Organisation management: owners invite/remove users, seat tracking (used vs total).
 - Daily expiry job: revokes groups, marks licenses inactive, deactivates expired orgs.
 - JSON APIs: user/org license status, admin CRUD for packages and org members, loader validation endpoints.
@@ -18,10 +18,7 @@ bundle exec rake db:migrate
 ```
 3) Configure settings in the admin panel under Plugins → SaaS Licensing:
 - `license_enabled`
-- `stripe_public_key`
-- `stripe_secret_key`
-- `stripe_webhook_secret` (optional but recommended for signature verification)
-- You can also edit these directly on the SaaS Licensing plugin page via the Settings section.
+- You can also edit this directly on the SaaS Licensing plugin page via the Settings section.
 
 ## Data Model
 - `DiscourseSaas::LicensePackage`: name, price_cents, duration_days, seats, group_id, is_org_license.
@@ -29,25 +26,11 @@ bundle exec rake db:migrate
 - `DiscourseSaas::Organisation`: name, owner_id, group_id, seats_total, seats_used, active.
 - `DiscourseSaas::OrganisationMember`: organisation_id, user_id, added_by_id.
 
-## Stripe Checkout Webhook
-Endpoint: `POST /saas/stripe/webhook`
-
-Expected metadata on the Checkout Session:
-```json
-{
-  "license_package_id": "<id of LicensePackage>",
-  "user_id": "<discourse user id>",
-  "organisation_name": "<optional org display name>"
-}
-```
-
-Flow on `checkout.session.completed`:
-1) Create `Purchase` with `expires_at` from `duration_days`, `active: true`.
-2) Assign package group to the buyer.
-3) If `is_org_license`:
-   - Create a dedicated group `org_<slug>_<user>_<token>`.
-   - Create `Organisation` with `seats_total` from the package.
-   - Add buyer as owner + first member, consuming 1 seat.
+## Payment Integration (bring your own)
+Implement payment in a companion plugin or external service:
+1) Charge the buyer.
+2) On success, call `DiscourseSaas::Purchase.create_with_package(user:, license_package:, organisation_name: nil)` (sets `expires_at` from package, grants group, and creates org/group for org packages).
+3) Alternatively, create a `Purchase` manually, set `expires_at`, call `purchase.grant_access!`, and for org packages call `purchase.create_org!`.
 
 ## Expiry Logic
 - `Jobs::DiscourseSaasLicenseExpiryJob` runs daily:
@@ -137,10 +120,9 @@ Admin (requires staff):
 
 ## Organisation Flow (example)
 1) Admin creates an org package (e.g., seats=10, duration=365, group maps to `pro_org`).
-2) Buyer completes Stripe Checkout with metadata `license_package_id`, `user_id`, `organisation_name`.
-3) Webhook creates purchase, org `group` (`org_acme_<token>`), sets owner as first member.
-4) Owner uses admin UI to invite users by username/email until seats are full.
-5) Daily job revokes expired licenses and org access automatically.
+2) Payment plugin/app charges buyer, creates purchase, and (for org packages) creates org + group.
+3) Owner uses admin UI to invite users by username/email until seats are full.
+4) Daily job revokes expired licenses and org access automatically.
 
 ## Admin UI
 - Available at `/admin/plugins/saas-licensing`.
@@ -148,5 +130,4 @@ Admin (requires staff):
 
 ## Safety & Notes
 - Controllers guard with `license_enabled` and admin checks where needed.
-- Stripe signing secret is optional but recommended.
 - Group creation uses randomised slug to avoid collisions.

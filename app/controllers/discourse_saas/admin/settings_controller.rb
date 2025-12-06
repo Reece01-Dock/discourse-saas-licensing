@@ -5,12 +5,7 @@ module DiscourseSaas
       skip_before_action :ensure_enabled, only: %i[index update]
       before_action :ensure_admin
 
-      PLUGIN_SETTINGS = %i[
-        license_enabled
-        stripe_public_key
-        stripe_secret_key
-        stripe_webhook_secret
-      ].freeze
+      PLUGIN_SETTINGS = %i[license_enabled].freeze
 
       def index
         render_json_dump(settings: settings_hash)

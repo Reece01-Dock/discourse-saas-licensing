@@ -10,18 +10,6 @@
           {{on "change" (fn this.updateSettingCheckbox "license_enabled")}}
         />
       </label>
-      <label>
-        {{i18n "saas_licensing.stripe_public_key"}}
-        <Input @value={{this.settingsForm.stripe_public_key}} />
-      </label>
-      <label>
-        {{i18n "saas_licensing.stripe_secret_key"}}
-        <Input @value={{this.settingsForm.stripe_secret_key}} @type="password" />
-      </label>
-      <label>
-        {{i18n "saas_licensing.stripe_webhook_secret"}}
-        <Input @value={{this.settingsForm.stripe_webhook_secret}} @type="password" />
-      </label>
     </div>
     <div class="saas-licensing__actions">
       <DButton
